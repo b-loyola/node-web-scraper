@@ -1,8 +1,14 @@
 var request = require('request');
 var cheerio = require('cheerio');
 var fs = require('fs');
+var path = require('path');
 
 var $;
+
+var target = 'http://substack.net/images/';
+var file = 'test.csv';
+
+var root = path.dirname(target);
 
 function scrape(url, callback){
 	request(url, function (error, response, body) {
@@ -13,20 +19,22 @@ function scrape(url, callback){
 			rows.each(function(i, elem){
 				var row = $(this);
 				var permissions = row.find('code').first().text();
-				var linkUrl = row.find('a').text();
-				var extension = row.find('a').text().match(/\.[a-z]+/i);
+				var linkUrl = row.find('a').prop('href');
+				var extension = path.extname(row.find('a').text());
 
-				if (linkUrl.match(/\.\./)){
+				if (linkUrl.match(/\.\./)) return;
 
-				} else if (extension) {
-					console.log("File: " + permissions + " " + url + linkUrl + " " + extension);
+				if (extension) {
+					var csvRow = [permissions, root + linkUrl, extension].join(",");
+					fs.appendFileSync(file, csvRow + "\n");
 				} else {
-					console.log("Link: " + url + linkUrl);
-					scrape(url + linkUrl);
+					scrape(root + linkUrl);
 				}
 			});
 		}
 	});
 }
 
-scrape('http://substack.net/images/');
+console.log("Searching for all files in " + root);
+scrape(target);
+console.log("Done! File information saved in " + file);
