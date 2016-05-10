@@ -1,22 +1,30 @@
-var request = require('request');
-var cheerio = require('cheerio');
 var fs = require('fs');
 var path = require('path');
+var url = require('url');
+
+var request = require('request');
+var cheerio = require('cheerio');
 
 var $;
 
-var target = 'http://substack.net/images/';
-var file = 'test.csv';
+if (process.argv.length !== 4) {
+	console.log("Usage: node scraper <target url> <csv file>");
+	return;
+}
 
-var root = path.dirname(target);
+var target = process.argv[2];
+var file = process.argv[3];
 
-function scrape(url, callback){
-	request(url, function (error, response, body) {
+var parsedTarget = url.parse(target);
+var root = parsedTarget.protocol + "//" + parsedTarget.host;
+
+function scrape(targetUrl, callback){
+	request(targetUrl, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			$ = cheerio.load(body);
 			var rows = $('table').find('tr');
 
-			rows.each(function(i, elem){
+			rows.each(function(){
 				var row = $(this);
 				var permissions = row.find('code').first().text();
 				var linkUrl = row.find('a').prop('href');
@@ -35,6 +43,6 @@ function scrape(url, callback){
 	});
 }
 
-console.log("Searching for all files in " + root);
+console.log("Searching for all files in " + target);
 scrape(target);
-console.log("Done! File information saved in " + file);
+console.log("Done!\nFile information saved in " + file);
