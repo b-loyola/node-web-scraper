@@ -1,0 +1,23 @@
+{
+  "name": "node-web-scraper",
+  "version": "1.0.0",
+  "description": "Node Web Scraper",
+  "main": "scraper.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/b-silva/node-web-scraper.git"
+  },
+  "author": "Bernardo Loyola",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/b-silva/node-web-scraper/issues"
+  },
+  "homepage": "https://github.com/b-silva/node-web-scraper#readme",
+  "dependencies": {
+    "cheerio": "^0.20.0",
+    "request": "^2.72.0"
+  }
+}
